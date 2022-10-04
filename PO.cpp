@@ -1,5 +1,10 @@
 #include <stdio.h>
 #include <malloc.h>
+const int N=6;
+struct obra{
+    char nomb[20];
+    int cnt;
+};
 struct pa{
     char nom[20];
     char sex;
@@ -12,6 +17,36 @@ struct nodo{
     struct nodo *sig;
 };
 typedef struct nodo *puntero;
+void set(obra arre[N]){
+    int i;
+    for(i=0;i<N;i++){
+        printf("\n Ingrese el nombre de la obra social:");
+        fflush(stdin);
+        gets(arre[i].nomb);
+    }
+    return;
+}
+void cereo (obra arre[N]){
+    int i;
+    for (i=0; i<N; i++){
+        arre[i].cnt=0;
+    }
+    return;
+}
+void mostrar(obra arre[N], int i){
+    if(i<N){
+        printf("\n Los atendidos por la obra social %s son: %d",arre[i].nomb,arre[i].cnt);
+        mostrar(arre,i+1);
+    }
+    else return;
+}
+void arreg(puntero cb, obra arre[N]){
+    if(cb!=NULL){
+        arre[cb->pac.cod-1].cnt+=1;
+        arreg(cb->sig,arre);
+    }
+    else return;
+}
 void busc(puntero cb,int dnib,int ob){
     if(cb==NULL){
         printf("\n El paciente no esta en la lista");
@@ -25,16 +60,15 @@ void busc(puntero cb,int dnib,int ob){
         }
     }
 }
-void calc(puntero cb, int &tot,int &at){
+int calc(puntero cb,int &at){
     if(cb!=NULL){
         if(cb->pac.sex=='F'&& cb->pac.edad>50){
             at+=1;
         }
-        calc(cb->sig,tot,at);
-        tot+=1;
+        return 1+calc(cb->sig,at);
     }
     else{
-        return;
+        return 0;
     }
 }
 void recorre(puntero cb){
@@ -57,13 +91,13 @@ void inser(puntero &cb){
         gets(nuevo->pac.nom);
         printf("\n Ingrese DNI:");
         scanf("%d",&nuevo->pac.dni);
+        printf("\n Ingrese codigo:");
+        scanf("%d",&nuevo->pac.cod);
         printf("\n Ingrese edad:");
         scanf("%d",&nuevo->pac.edad);
         printf("\n Ingrese sexo:");
         fflush(stdin);
         scanf("%c",&nuevo->pac.sex);
-        printf("\n Ingrese codigo:");
-        scanf("%d",&nuevo->pac.cod);
         nuevo->sig=cb;
         cb=nuevo;
         printf("\n Ingrese 0 para terminar o otro num para seguir:");
@@ -76,11 +110,12 @@ void crear(puntero &cb){
 }
 int main(){
     puntero cb;
-    int tot=0,at=0,dnib,ob;
+    int tot=0,at=0,dnib,ob,i=0;
+    obra arre[N];
     crear(cb);
     inser(cb);
     recorre(cb);
-    calc(cb,tot,at);
+    tot=calc(cb,at);
     printf("\n Total de atendidos: %d",tot);
     printf("\n Mujeres mas de 50: %d",at);
     printf("\n Ingrese DNI a buscar:");
@@ -88,4 +123,8 @@ int main(){
     printf("\n Ingrese obra social a cambiar:");
     scanf("%d",&ob);
     busc(cb,dnib,ob);
+    cereo(arre);
+    set(arre);
+    arreg(cb,arre);
+    mostrar(arre,i);
 }
